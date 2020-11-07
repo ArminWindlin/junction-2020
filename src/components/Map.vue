@@ -21,9 +21,8 @@ export default {
       corX: 0,
       corY: 0,
       users: [],
-      images: {
-        map: null
-      }
+      images: {},
+      direction: 'up'
     };
   },
   methods: {
@@ -45,6 +44,8 @@ export default {
       ctx.arc(this.config.width / 2, this.config.height / 2, 10, 0, 2 * Math.PI);
       ctx.fill();
 
+      this.drawDana(ctx);
+
       ctx.fillStyle = 'blue';
       for (const person of this.users) {
         ctx.beginPath();
@@ -59,13 +60,65 @@ export default {
       if (!this.images.map) return;
       ctx.drawImage(this.images.map, 10, 10)
     },
+    drawDana(ctx) {
+      if (!this.images.up) return;
+      switch (this.direction) {
+        case "up":
+          ctx.drawImage(this.images.up, this.config.width / 2, this.config.height / 2, 50, 50);
+          break;
+
+        case "down":
+          ctx.drawImage(this.images.down, this.config.width / 2, this.config.height / 2, 50, 50);
+          break;
+
+        case "right":
+          ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 50);
+          break;
+
+        case "left":
+          ctx.drawImage(this.images.left, this.config.width / 2, this.config.height / 2, 50, 50);
+          break;
+
+        default:
+          ctx.drawImage(this.images.up, this.config.width / 2, this.config.height / 2, 50, 50);
+          break;
+      }
+
+
+    },
     loadImages() {
       // banners
-      let mapImage = new window.Image();
-      mapImage.src = require('../assets/sample_map.jpg');
-      mapImage.onload = () => {
-        this.images.map = mapImage;
-      };
+      const images = [
+        {
+          name: 'map',
+          src: 'sample_map.jpg'
+        },
+        {
+          name: 'up',
+          src: 'dana/up.png'
+        },
+        {
+          name: 'down',
+          src: 'dana/down.png'
+        },
+        {
+          name: 'left',
+          src: 'dana/left.png'
+        },
+        {
+          name: 'right',
+          src: 'dana/right.png'
+        }]
+
+      images.forEach(img => {
+        const imageObject = new window.Image();
+        imageObject.src = require(`../assets/${img.src}`)
+
+        imageObject.onload = () => {
+          this.images[img.name] = imageObject;
+        }
+        console.log(this.images)
+      })
     },
     onKeyPress(e) {
       const key = e.key;
@@ -73,11 +126,15 @@ export default {
       let y = 0;
       if (key === 'w') {
         y = -10;
+        this.direction = 'up'
       } else if (key === 's') {
+        this.direction = 'down'
         y = 10;
       } else if (key === 'a') {
+        this.direction = 'left'
         x = -10
       } else if (key === 'd') {
+        this.direction = 'up'
         x = 10
       }
 
