@@ -67,8 +67,8 @@ export default {
 
       this.you.x += x;
       this.you.y += y;
-      this.corX += x;
-      this.corY += y;
+      this.corX -= x;
+      this.corY -= y;
 
       // save to db
       this.$users.doc(this.userId).set(this.you);
@@ -78,8 +78,8 @@ export default {
       if (snapshot.exists) {
         this.userId = userId;
         this.you = snapshot.data();
-        this.corX = this.you.x - this.config.width / 2;
-        this.corY = this.you.y - this.config.height / 2;
+        this.corX = this.config.width / 2 - this.you.x;
+        this.corY = this.config.height / 2 - this.you.y;
         this.getUsers();
       } else this.initUser();
     },
