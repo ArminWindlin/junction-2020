@@ -1,10 +1,10 @@
 <template>
   <div>
     <canvas
-      ref="main-canvas"
-      class="main-canvas"
-      :width="config.width"
-      :height="config.height"
+        ref="main-canvas"
+        class="main-canvas"
+        :width="config.width"
+        :height="config.height"
     >
       map
     </canvas>
@@ -14,9 +14,10 @@
 
 <script>
 import Webcam from "./Webcam.vue";
+
 export default {
   name: "Map",
-  components: { Webcam },
+  components: {Webcam},
   data() {
     return {
       config: {
@@ -32,9 +33,9 @@ export default {
       corX: 0,
       corY: 0,
       users: [],
-      images: {
-        map: null
-      }
+      images: {},
+      direction: 'up',
+      looksLeft: false
     };
   },
   methods: {
@@ -51,22 +52,19 @@ export default {
 
       this.drawBackground(ctx);
 
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = 'blue';
       ctx.beginPath();
-      ctx.arc(
-        this.config.width / 2,
-        this.config.height / 2,
-        10,
-        0,
-        2 * Math.PI
-      );
+      // ctx.arc(this.config.width / 2, this.config.height / 2, 10, 0, 2 * Math.PI);
       ctx.fill();
 
-      ctx.fillStyle = "blue";
+      this.drawDana(ctx);
+
+      ctx.fillStyle = 'red';
       for (const person of this.users) {
         ctx.beginPath();
-        ctx.arc(person.x + this.corX, person.y + this.corY, 10, 0, 2 * Math.PI);
+        // ctx.arc(person.x + this.corX, person.y + this.corY, 10, 0, 2 * Math.PI);
         ctx.fill();
+        ctx.drawImage(this.images.redDana, person.x + this.corX, person.y + this.corY, 50, 75);
       }
       ctx.restore();
 
@@ -76,13 +74,58 @@ export default {
       if (!this.images.map) return;
       ctx.drawImage(this.images.map, this.corX, this.corY)
     },
+    drawDana(ctx) {
+      if (!this.images.right) return;
+      switch (this.direction) {
+        case "right":
+          this.looksLeft = false;
+          ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 75);
+          break;
+
+        case "left":
+          this.looksLeft = true;
+          ctx.drawImage(this.images.left, this.config.width / 2, this.config.height / 2, 50, 75);
+          break;
+
+        default:
+          if (this.looksLeft) {
+            ctx.drawImage(this.images.left, this.config.width / 2, this.config.height / 2, 50, 75);
+          } else {
+            ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 75);
+          }
+          break;
+      }
+    },
     loadImages() {
       // banners
-      let mapImage = new window.Image();
-      mapImage.src = require('../assets/awesome_map.png');
-      mapImage.onload = () => {
-        this.images.map = mapImage;
-      };
+      const images = [
+        {
+          name: 'map',
+          src: 'awesome_map.png'
+        },
+        {
+          name: 'left',
+          src: 'dana/left.png'
+        },
+        {
+          name: 'right',
+          src: 'dana/right.png'
+        },
+        {
+          name: 'redDana',
+          src: 'dana/red_dana.png'
+        }
+      ]
+
+      images.forEach(img => {
+        const imageObject = new window.Image();
+        imageObject.src = require(`../assets/${img.src}`)
+
+        imageObject.onload = () => {
+          this.images[img.name] = imageObject;
+        }
+        console.log(this.images)
+      })
     },
     onKeyPress(e) {
       const key = e.key;
@@ -90,12 +133,16 @@ export default {
       let y = 0;
       if (key === "w" || key === 'ArrowUp') {
         y = -10;
+        this.direction = 'up'
       } else if (key === "s" || key === 'ArrowDown') {
         y = 10;
+        this.direction = 'down'
       } else if (key === "a" || key === 'ArrowLeft') {
         x = -10;
+        this.direction = 'left'
       } else if (key === "d" || key === 'ArrowRight') {
         x = 10;
+        this.direction = 'right'
       }
 
       this.you.x += x;
@@ -119,8 +166,8 @@ export default {
     getUsers() {
       this.$users.onSnapshot((querySnapshot) => {
         this.users = querySnapshot.docs
-          .filter((userSnap) => userSnap.id !== this.userId)
-          .map((userSnap) => userSnap.data());
+            .filter((userSnap) => userSnap.id !== this.userId)
+            .map((userSnap) => userSnap.data());
       });
     },
     initUser() {
@@ -146,7 +193,7 @@ export default {
   },
   watch: {
     you: {
-      handler: ({ x, y }) => console.log({ x, y }),
+      handler: ({x, y}) => console.log({x, y}),
       deep: true,
     },
   },
