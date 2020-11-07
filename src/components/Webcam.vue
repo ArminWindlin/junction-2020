@@ -1,5 +1,8 @@
 <template>
-  <video autoplay playsinline></video>
+  <div>
+    <video id="localVideo" muted autoplay playsinline></video>
+    <video id="remoteVideo" autoplay playsinline></video>
+  </div>
 </template>
 
 <script>
@@ -26,7 +29,12 @@ export default {
     check() {
       const closeUsers = this.users.filter((u) => getCloseUser(u, this.you));
       if (closeUsers.length > 0) {
-        joinRoom();
+        joinRoom(
+          this.peerConnection,
+          this.localStream,
+          this.remoteStream,
+          this.you
+        );
       }
     },
     createRoom() {
@@ -51,7 +59,7 @@ export default {
     };
 
     // Video element where stream will be placed.
-    const localVideo = document.querySelector("video");
+    const localVideo = document.querySelector("#localVideo");
 
     // Handles success by adding the MediaStream to the video element.
     function gotLocalMediaStream(mediaStream) {
@@ -69,6 +77,9 @@ export default {
       .getUserMedia(mediaStreamConstraints)
       .then(gotLocalMediaStream.bind(this))
       .catch(handleLocalMediaStreamError);
+
+    this.remoteStream = new MediaStream();
+    document.querySelector("#remoteVideo").srcObject = this.remoteStream;
   },
 };
 </script>

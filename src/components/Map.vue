@@ -142,6 +142,12 @@ export default {
     if (userId) this.getUser(userId);
     else this.initUser();
   },
+  watch: {
+    you: {
+      handler: ({ x, y }) => console.log({ x, y }),
+      deep: true,
+    },
+  },
 };
 </script>
 

@@ -20,7 +20,7 @@ export default async function joinRoom(
   if (roomSnapshot.exists) {
     console.log("Create PeerConnection with configuration: ", configuration);
     peerConnection = new RTCPeerConnection(configuration);
-    registerPeerConnectionListeners();
+    registerPeerConnectionListeners(peerConnection);
     localStream.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream);
     });
