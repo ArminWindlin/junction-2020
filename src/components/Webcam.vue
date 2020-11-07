@@ -27,14 +27,30 @@ export default {
   },
   methods: {
     check() {
+      console.log('yea')
       const closeUsers = this.users.filter((u) => getCloseUser(u, this.you));
       if (closeUsers.length > 0) {
-        joinRoom(
-          this.peerConnection,
-          this.localStream,
-          this.remoteStream,
-          this.you
-        );
+        if (closeUsers[0].id < this.you.id){
+          if(this.you.roomId) return;
+          console.log('yea1')
+          createRoom(
+              this.peerConnection,
+              this.localStream,
+              this.remoteStream,
+              this.you
+          ).then(()=> this.$users.doc(this.you.id).update({
+            roomId: this.you.id
+          }))
+        } else if(closeUsers[0].roomId) {
+          console.log('yea2')
+          joinRoom(
+              this.peerConnection,
+              this.localStream,
+              this.remoteStream,
+              this.you,
+              closeUsers[0].roomId
+          );
+        }
       }
     },
     createRoom() {

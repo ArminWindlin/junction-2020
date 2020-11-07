@@ -9,9 +9,11 @@ export default async function joinRoom(
   peerConnection,
   localStream,
   remoteStream,
-  you
+  you,
+  specificRoom = null
 ) {
-  const roomId = getRoomId(you);
+  let roomId = getRoomId(you);
+  if (specificRoom) roomId = specificRoom;
   const db = firebase.firestore();
   const roomRef = db.collection("rooms").doc(`${roomId}`);
   const roomSnapshot = await roomRef.get();

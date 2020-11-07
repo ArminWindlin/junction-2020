@@ -27,6 +27,7 @@ export default {
       you: {
         x: 250,
         y: 250,
+        id: ''
       },
       corX: 0,
       corY: 0,
@@ -128,6 +129,7 @@ export default {
       this.$users.doc(newId).set({
         x: 250,
         y: 250,
+        id: newId
       });
       this.you.x = 250;
       this.you.y = 250;
