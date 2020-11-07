@@ -23,6 +23,7 @@ export default {
       peerConnection: null,
       localStream: null,
       remoteStream: null,
+      hostingRoom: false,
     };
   },
   methods: {
@@ -30,20 +31,24 @@ export default {
       console.log("yea");
       const closeUsers = this.users.filter((u) => getCloseUser(u, this.you));
       if (closeUsers.length > 0) {
+        console.log({ closeUser: closeUsers[0] });
         if (closeUsers[0].id < this.you.id) {
-          if (this.you.roomId) return;
-          console.log("yea1");
+          if (this.you.roomId || this.hostingRoom) return;
+          this.hostingRoom = true;
+          console.count("yea1");
           createRoom(
             this.peerConnection,
             this.localStream,
             this.remoteStream,
             this.you,
             this.you.id
-          ).then(() =>
+          ).then(() => {
+            console.log("add roomId");
+            setTimeout(() => {}, 5000);
             this.$users.doc(this.you.id).update({
               roomId: this.you.id,
-            })
-          );
+            });
+          });
         } else if (closeUsers[0].roomId) {
           console.log("yea2");
           joinRoom(
