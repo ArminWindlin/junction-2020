@@ -57,12 +57,12 @@ export default {
     },
     drawBackground(ctx) {
       if (!this.images.map) return;
-      ctx.drawImage(this.images.map, 10, 10)
+      ctx.drawImage(this.images.map, this.corX, this.corY)
     },
     loadImages() {
       // banners
       let mapImage = new window.Image();
-      mapImage.src = require('../assets/sample_map.jpg');
+      mapImage.src = require('../assets/sample_map.png');
       mapImage.onload = () => {
         this.images.map = mapImage;
       };
