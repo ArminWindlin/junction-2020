@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       config: {
-        width: 500,
+        width: 800,
         height: 500,
       },
       userId: "",
@@ -79,7 +79,7 @@ export default {
     loadImages() {
       // banners
       let mapImage = new window.Image();
-      mapImage.src = require('../assets/sample_map.png');
+      mapImage.src = require('../assets/awesome_map.png');
       mapImage.onload = () => {
         this.images.map = mapImage;
       };
@@ -88,13 +88,13 @@ export default {
       const key = e.key;
       let x = 0;
       let y = 0;
-      if (key === "w") {
+      if (key === "w" || key === 'ArrowUp') {
         y = -10;
-      } else if (key === "s") {
+      } else if (key === "s" || key === 'ArrowDown') {
         y = 10;
-      } else if (key === "a") {
+      } else if (key === "a" || key === 'ArrowLeft') {
         x = -10;
-      } else if (key === "d") {
+      } else if (key === "d" || key === 'ArrowRight') {
         x = 10;
       }
 
@@ -154,8 +154,4 @@ export default {
 </script>
 
 <style scoped>
-#main-canvas {
-  width: 500px;
-  height: 500px;
-}
 </style>
