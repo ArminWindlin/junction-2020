@@ -20,7 +20,10 @@ export default {
       },
       corX: 0,
       corY: 0,
-      users: []
+      users: [],
+      images: {
+        map: null
+      }
     };
   },
   methods: {
@@ -35,6 +38,8 @@ export default {
       ctx.fillStyle = 'green';
       ctx.fillRect(0, 0, this.config.width, this.config.height);
 
+      this.drawBackground(ctx);
+
       ctx.fillStyle = 'red';
       ctx.beginPath();
       ctx.arc(this.config.width / 2, this.config.height / 2, 10, 0, 2 * Math.PI);
@@ -46,10 +51,21 @@ export default {
         ctx.arc(person.x + this.corX, person.y + this.corY, 10, 0, 2 * Math.PI);
         ctx.fill();
       }
-
       ctx.restore();
 
       window.requestAnimationFrame(this.draw);
+    },
+    drawBackground(ctx) {
+      if (!this.images.map) return;
+      ctx.drawImage(this.images.map, this.corX, this.corY)
+    },
+    loadImages() {
+      // banners
+      let mapImage = new window.Image();
+      mapImage.src = require('../assets/sample_map.png');
+      mapImage.onload = () => {
+        this.images.map = mapImage;
+      };
     },
     onKeyPress(e) {
       const key = e.key;
@@ -104,6 +120,7 @@ export default {
   },
   mounted() {
     this.init();
+    this.loadImages();
     window.addEventListener('keypress', this.onKeyPress);
     const userId = localStorage.getItem('userId');
     if (userId) this.getUser(userId);
