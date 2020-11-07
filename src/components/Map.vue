@@ -11,34 +11,16 @@ export default {
     return {
       config: {
         width: 500,
-        height: 500
+        height: 500,
       },
+      userId: '',
       you: {
         x: 250,
         y: 250,
-        dX: 250,
-        dY: 250,
       },
-      persons: [
-        {
-          x: 60,
-          y: 60,
-          dX: 60,
-          dY: 60,
-        },
-        {
-          x: 60,
-          y: 120,
-          dX: 60,
-          dY: 120,
-        },
-        {
-          x: 400,
-          y: 350,
-          dX: 400,
-          dY: 350,
-        }
-      ]
+      corX: 0,
+      corY: 0,
+      users: []
     };
   },
   methods: {
@@ -46,6 +28,7 @@ export default {
       window.requestAnimationFrame(this.draw);
     },
     draw() {
+      if (!this.$refs['main-canvas']) return;
       const ctx = this.$refs['main-canvas'].getContext('2d');
       ctx.clearRect(0, 0, this.config.width, this.config.height); // clear canvas
 
@@ -54,13 +37,13 @@ export default {
 
       ctx.fillStyle = 'red';
       ctx.beginPath();
-      ctx.arc(this.you.dX, this.you.dY, 10, 0, 2 * Math.PI);
+      ctx.arc(this.config.width / 2, this.config.height / 2, 10, 0, 2 * Math.PI);
       ctx.fill();
 
       ctx.fillStyle = 'blue';
-      for (const person of this.persons) {
+      for (const person of this.users) {
         ctx.beginPath();
-        ctx.arc(person.dX, person.dY, 10, 0, 2 * Math.PI);
+        ctx.arc(person.x + this.corX, person.y + this.corY, 10, 0, 2 * Math.PI);
         ctx.fill();
       }
 
@@ -70,7 +53,6 @@ export default {
     },
     onKeyPress(e) {
       const key = e.key;
-      console.log(key)
       let x = 0;
       let y = 0;
       if (key === 'w') {
@@ -85,15 +67,47 @@ export default {
 
       this.you.x += x;
       this.you.y += y;
-      for (const person of this.persons) {
-        person.dX -= x;
-        person.dY -= y;
-      }
+      this.corX -= x;
+      this.corY -= y;
+
+      // save to db
+      this.$users.doc(this.userId).set(this.you);
+    },
+    async getUser(userId) {
+      const snapshot = await this.$users.doc(userId).get();
+      if (snapshot.exists) {
+        this.userId = userId;
+        this.you = snapshot.data();
+        this.corX = this.config.width / 2 - this.you.x;
+        this.corY = this.config.height / 2 - this.you.y;
+        this.getUsers();
+      } else this.initUser();
+    },
+    getUsers() {
+      this.$users.onSnapshot((querySnapshot) => {
+        this.users = querySnapshot.docs
+            .filter(userSnap => userSnap.id !== this.userId)
+            .map(userSnap => userSnap.data());
+      });
+    },
+    initUser() {
+      const newId = this.$users.doc().id;
+      localStorage.setItem('userId', newId)
+      this.$users.doc(newId).set({
+        x: 250,
+        y: 250,
+      })
+      this.you.x = 250;
+      this.you.y = 250;
+      this.getUsers();
     }
   },
   mounted() {
     this.init();
-    window.addEventListener('keypress', this.onKeyPress)
+    window.addEventListener('keypress', this.onKeyPress);
+    const userId = localStorage.getItem('userId');
+    if (userId) this.getUser(userId);
+    else this.initUser();
   }
 }
 </script>
