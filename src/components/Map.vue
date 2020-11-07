@@ -59,7 +59,7 @@ export default {
     },
     drawBackground(ctx) {
       if (!this.images.map) return;
-      ctx.drawImage(this.images.map, 10, 10)
+      ctx.drawImage(this.images.map, this.corX, this.corY)
     },
     drawDana(ctx) {
       if (!this.images.right) return;
@@ -88,7 +88,7 @@ export default {
       const images = [
         {
           name: 'map',
-          src: 'sample_map.jpg'
+          src: 'sample_map.png'
         },
         {
           name: 'left',
