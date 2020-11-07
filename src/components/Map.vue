@@ -1,12 +1,18 @@
 <template>
+<div>
   <canvas ref="main-canvas" id="main-canvas" :width="config.width" :height="config.height">
     map
   </canvas>
+    <Webcam :users="users" />
+
+  </div>
 </template>
 
 <script>
+import Webcam from "./Webcam"
 export default {
   name: 'Map',
+  components:{Webcam},
   data() {
     return {
       config: {
