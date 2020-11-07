@@ -8,10 +8,11 @@ export default async function createRoom(
   peerConnection,
   localStream,
   remoteStream,
-  you
+  you,
+  specificRoom = null
 ) {
   const db = firebase.firestore();
-  const roomId = getRoomId(you);
+  const roomId = specificRoom ?? getRoomId(you);
   const roomRef = db.collection("rooms").doc(roomId);
 
   console.log("Create PeerConnection with configuration: ", configuration);
