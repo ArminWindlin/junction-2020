@@ -22,7 +22,8 @@ export default {
       corY: 0,
       users: [],
       images: {},
-      direction: 'up'
+      direction: 'up',
+      dirCounter: [0,0,0,0] // up,right,down,left
     };
   },
   methods: {
@@ -63,14 +64,6 @@ export default {
     drawDana(ctx) {
       if (!this.images.up) return;
       switch (this.direction) {
-        case "up":
-          ctx.drawImage(this.images.up, this.config.width / 2, this.config.height / 2, 50, 50);
-          break;
-
-        case "down":
-          ctx.drawImage(this.images.down, this.config.width / 2, this.config.height / 2, 50, 50);
-          break;
-
         case "right":
           ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 50);
           break;
@@ -83,8 +76,6 @@ export default {
           ctx.drawImage(this.images.up, this.config.width / 2, this.config.height / 2, 50, 50);
           break;
       }
-
-
     },
     loadImages() {
       // banners
@@ -108,7 +99,8 @@ export default {
         {
           name: 'right',
           src: 'dana/right.png'
-        }]
+        }
+      ]
 
       images.forEach(img => {
         const imageObject = new window.Image();
