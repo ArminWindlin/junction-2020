@@ -52,24 +52,19 @@ export default {
 
       this.drawBackground(ctx);
 
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = 'blue';
       ctx.beginPath();
-      ctx.arc(
-          this.config.width / 2,
-          this.config.height / 2,
-          10,
-          0,
-          2 * Math.PI
-      );
+      // ctx.arc(this.config.width / 2, this.config.height / 2, 10, 0, 2 * Math.PI);
       ctx.fill();
 
       this.drawDana(ctx);
 
-      ctx.fillStyle = 'blue';
+      ctx.fillStyle = 'red';
       for (const person of this.users) {
         ctx.beginPath();
-        ctx.arc(person.x + this.corX, person.y + this.corY, 10, 0, 2 * Math.PI);
+        // ctx.arc(person.x + this.corX, person.y + this.corY, 10, 0, 2 * Math.PI);
         ctx.fill();
+        ctx.drawImage(this.images.redDana, person.x + this.corX, person.y + this.corY, 50, 75);
       }
       ctx.restore();
 
@@ -115,6 +110,10 @@ export default {
         {
           name: 'right',
           src: 'dana/right.png'
+        },
+        {
+          name: 'redDana',
+          src: 'dana/red_dana.png'
         }
       ]
 
@@ -143,7 +142,7 @@ export default {
         this.direction = 'left'
       } else if (key === "d" || key === 'ArrowRight') {
         x = 10;
-        this.direction = 'up'
+        this.direction = 'right'
       }
 
       this.you.x += x;
