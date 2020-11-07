@@ -8,6 +8,7 @@
 <script>
 import joinRoom from "./joinRoom";
 import createRoom from "./createRoom";
+import closeRoom from "./closeRoom";
 
 const getCloseUser = ({ x, y }, you) => x === you.x && y === you.y;
 export default {
@@ -20,6 +21,7 @@ export default {
   },
   data() {
     return {
+      hostingRoom: false,
       peerConnection: null,
       localStream: null,
       remoteStream: null,
@@ -28,7 +30,7 @@ export default {
   methods: {
     check() {
       const closeUsers = this.users.filter((u) => getCloseUser(u, this.you));
-      if (closeUsers.length > 0) {
+      if (closeUsers.length > 0 && !this.hostingRoom) {
         joinRoom(
           this.peerConnection,
           this.localStream,
@@ -42,14 +44,25 @@ export default {
     },
     onKeyPress(e) {
       const key = e.key;
-      if (key === "Enter") {
-        createRoom(
-          this.peerConnection,
-          this.localStream,
-          this.remoteStream,
-          this.you
-        );
+      switch (key) {
+        case "Enter":
+          this.hostingRoom = true;
+          createRoom(
+            this.peerConnection,
+            this.localStream,
+            this.remoteStream,
+            this.you
+          );
+          break;
+        case "c":
+          this.closeRoom();
+          break;
+        default:
       }
+    },
+    closeRoom() {
+      this.hostingRoom = false;
+      closeRoom(this.peerConnection, this.remoteStream, this.you);
     },
   },
   mounted() {
