@@ -1,67 +1,23 @@
 import firebase from "firebase";
-
-const configuration = {
-  iceServers: [
-    {
-      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
-    },
-  ],
-  iceCandidatePoolSize: 10,
-};
-
-let peerConnection = null;
-let localStream = null;
-let remoteStream = null;
-
-(async function openUserMedia() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: true,
-    audio: true,
-  });
-  document.querySelector("#localVideo").srcObject = stream;
-  localStream = stream;
-  remoteStream = new MediaStream();
-  document.querySelector("#remoteVideo").srcObject = remoteStream;
-
-  console.log("Stream:", document.querySelector("#localVideo").srcObject);
-  document.querySelector("#cameraBtn").disabled = true;
-  document.querySelector("#joinBtn").disabled = false;
-  document.querySelector("#createBtn").disabled = false;
-  document.querySelector("#hangupBtn").disabled = false;
-})();
-
-function registerPeerConnectionListeners() {
-  peerConnection.addEventListener("icegatheringstatechange", () => {
-    console.log(
-      `ICE gathering state changed: ${peerConnection.iceGatheringState}`
-    );
-  });
-
-  peerConnection.addEventListener("connectionstatechange", () => {
-    console.log(`Connection state change: ${peerConnection.connectionState}`);
-  });
-
-  peerConnection.addEventListener("signalingstatechange", () => {
-    console.log(`Signaling state change: ${peerConnection.signalingState}`);
-  });
-
-  peerConnection.addEventListener("iceconnectionstatechange ", () => {
-    console.log(
-      `ICE connection state change: ${peerConnection.iceConnectionState}`
-    );
-  });
-}
-
-export async function createRoom() {
-  document.querySelector("#createBtn").disabled = true;
-  document.querySelector("#joinBtn").disabled = true;
+import {
+  getRoomId,
+  configuration,
+  registerPeerConnectionListeners,
+} from "./webcam";
+export default async function createRoom(
+  peerConnection,
+  localStream,
+  remoteStream,
+  you
+) {
   const db = firebase.firestore();
-  const roomRef = db.collection("rooms").doc();
+  const roomId = getRoomId(you);
+  const roomRef = db.collection("rooms").doc(roomId);
 
   console.log("Create PeerConnection with configuration: ", configuration);
   peerConnection = new RTCPeerConnection(configuration);
 
-  registerPeerConnectionListeners();
+  registerPeerConnectionListeners(peerConnection);
 
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
@@ -92,11 +48,7 @@ export async function createRoom() {
     },
   };
   await roomRef.set(roomWithOffer);
-  roomId = roomRef.id;
   console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
-  document.querySelector(
-    "#currentRoom"
-  ).innerText = `Current room is ${roomRef.id} - You are the caller!`;
   // Code for creating a room above
 
   peerConnection.addEventListener("track", (event) => {

@@ -3,7 +3,9 @@
 </template>
 
 <script>
-import { createRoom } from "./webcam";
+import joinRoom from "./joinRoom";
+import createRoom from "./createRoom";
+
 const getCloseUser = ({ x, y }, you) => x === you.x && y === you.y;
 export default {
   name: "Map",
@@ -24,20 +26,26 @@ export default {
     check() {
       const closeUsers = this.users.filter((u) => getCloseUser(u, this.you));
       if (closeUsers.length > 0) {
-        this.createRoom();
+        joinRoom();
       }
     },
     createRoom() {
       console.log(this.you);
-      createRoom(
-        this.peerConnection,
-        this.localStream,
-        this.remoteStream,
-        this.you
-      );
+    },
+    onKeyPress(e) {
+      const key = e.key;
+      if (key === "Enter") {
+        createRoom(
+          this.peerConnection,
+          this.localStream,
+          this.remoteStream,
+          this.you
+        );
+      }
     },
   },
   mounted() {
+    window.addEventListener("keypress", this.onKeyPress);
     const mediaStreamConstraints = {
       video: true,
     };
