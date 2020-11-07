@@ -3,12 +3,38 @@
 </template>
 
 <script>
+import { createRoom } from "./webcam";
+const getCloseUser = ({ x, y }, you) => x === you.x && y === you.y;
 export default {
   name: "Map",
-  props: { users: { default: () => [], type: Array } },
+  props: { users: { default: () => [], type: Array }, you: Object },
   watch: {
-    users: function(users) {
-      console.log(users[0].x);
+    users: function() {
+      this.check();
+    },
+  },
+  data() {
+    return {
+      peerConnection: null,
+      localStream: null,
+      remoteStream: null,
+    };
+  },
+  methods: {
+    check() {
+      const closeUsers = this.users.filter((u) => getCloseUser(u, this.you));
+      if (closeUsers.length > 0) {
+        this.createRoom();
+      }
+    },
+    createRoom() {
+      console.log(this.you);
+      createRoom(
+        this.peerConnection,
+        this.localStream,
+        this.remoteStream,
+        this.you
+      );
     },
   },
   mounted() {
@@ -19,13 +45,9 @@ export default {
     // Video element where stream will be placed.
     const localVideo = document.querySelector("video");
 
-    // Local stream that will be reproduced on the video.
-    let localStream;
-    console.log(localStream);
-
     // Handles success by adding the MediaStream to the video element.
     function gotLocalMediaStream(mediaStream) {
-      localStream = mediaStream;
+      this.localStream = mediaStream;
       localVideo.srcObject = mediaStream;
     }
 
@@ -37,7 +59,7 @@ export default {
     // Initializes media stream.
     navigator.mediaDevices
       .getUserMedia(mediaStreamConstraints)
-      .then(gotLocalMediaStream)
+      .then(gotLocalMediaStream.bind(this))
       .catch(handleLocalMediaStreamError);
   },
 };
