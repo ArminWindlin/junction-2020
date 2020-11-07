@@ -2,13 +2,13 @@
   <div>
     <canvas
       ref="main-canvas"
-      id="main-canvas"
+      class="main-canvas"
       :width="config.width"
       :height="config.height"
     >
       map
     </canvas>
-    <Webcam :users="users" :you="you" />
+    <Webcam :users="users" :you="you" class="webcam"/>
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       config: {
-        width: 800,
+        width: 900,
         height: 500,
       },
       userId: "",
@@ -154,4 +154,17 @@ export default {
 </script>
 
 <style scoped>
+.main-canvas {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.webcam {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
 </style>

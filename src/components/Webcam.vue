@@ -1,7 +1,7 @@
 <template>
   <div>
-    <video id="localVideo" muted autoplay playsinline></video>
-    <video id="remoteVideo" autoplay playsinline></video>
+    <video id="localVideo" muted autoplay playsinline class="local-video"></video>
+    <video id="remoteVideo" autoplay playsinline class="remote-video"></video>
   </div>
 </template>
 
@@ -108,4 +108,18 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.local-video{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 200px;
+}
+
+.remote-video{
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  height: 200px;
+}
+</style>
