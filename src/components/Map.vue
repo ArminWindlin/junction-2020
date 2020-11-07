@@ -23,7 +23,7 @@ export default {
       users: [],
       images: {},
       direction: 'up',
-      dirCounter: [0,0,0,0] // up,right,down,left
+      looksLeft: false
     };
   },
   methods: {
@@ -62,18 +62,24 @@ export default {
       ctx.drawImage(this.images.map, 10, 10)
     },
     drawDana(ctx) {
-      if (!this.images.up) return;
+      if (!this.images.right) return;
       switch (this.direction) {
         case "right":
-          ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 50);
+          this.looksLeft = false;
+          ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 75);
           break;
 
         case "left":
-          ctx.drawImage(this.images.left, this.config.width / 2, this.config.height / 2, 50, 50);
+          this.looksLeft = true;
+          ctx.drawImage(this.images.left, this.config.width / 2, this.config.height / 2, 50, 75);
           break;
 
         default:
-          ctx.drawImage(this.images.up, this.config.width / 2, this.config.height / 2, 50, 50);
+          if (this.looksLeft) {
+            ctx.drawImage(this.images.left, this.config.width / 2, this.config.height / 2, 50, 75);
+          } else {
+            ctx.drawImage(this.images.right, this.config.width / 2, this.config.height / 2, 50, 75);
+          }
           break;
       }
     },
@@ -83,14 +89,6 @@ export default {
         {
           name: 'map',
           src: 'sample_map.jpg'
-        },
-        {
-          name: 'up',
-          src: 'dana/up.png'
-        },
-        {
-          name: 'down',
-          src: 'dana/down.png'
         },
         {
           name: 'left',
